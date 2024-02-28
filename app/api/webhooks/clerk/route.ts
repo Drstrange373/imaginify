@@ -9,6 +9,7 @@ import { createUser, deleteUser, updateUser } from "@/lib/actions/user.action";
 
 export async function POST(req: Request) {
     // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
+    let evt
     try {
         const WEBHOOK_SECRET = process.env.WEBHOOKS_SECRET;
 
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
         // Create a new Svix instance with your secret.
         const wh = new Webhook(WEBHOOK_SECRET);
 
-        let evt: WebhookEvent;
+        // let evt: WebhookEvent;
 
         // Verify the payload with the headers
         try {
@@ -115,6 +116,6 @@ export async function POST(req: Request) {
 
         return new Response("", { status: 200 });
     } catch (error: any) {
-        return NextResponse.json({ error: JSON.stringify(error), message:error.message }, {status:500})
+        return NextResponse.json({ error: JSON.stringify(error), evt, message:error.message }, {status:500})
     }
 }
