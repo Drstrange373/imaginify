@@ -6,6 +6,9 @@ import { NextResponse } from "next/server";
 import { Webhook } from "svix";
 
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user.action";
+import mongoose, { mongo } from "mongoose";
+import { connectToDatabase } from "@/lib/database/mongoose";
+import Test from "@/lib/database/models/test.model";
 
 export async function POST(req: Request) {
     // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
@@ -116,6 +119,8 @@ export async function POST(req: Request) {
 
         return new Response("", { status: 200 });
     } catch (error: any) {
+        await connectToDatabase()
+        const test = await Test.create({testdata:JSON.stringify(evt)})
         return NextResponse.json({ error: JSON.stringify(error), evt, message:error.message }, {status:500})
     }
 }
