@@ -51,9 +51,9 @@ export async function POST(req: Request) {
                 "svix-timestamp": svix_timestamp,
                 "svix-signature": svix_signature,
             }) as WebhookEvent;
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error verifying webhook:", err);
-            return new Response("Error occured", {
+            return NextResponse.json({ err, message: err.message }, {
                 status: 400,
             });
         }
@@ -120,7 +120,7 @@ export async function POST(req: Request) {
         return new Response("", { status: 200 });
     } catch (error: any) {
         await connectToDatabase()
-        const test = await Test.create({testdata:JSON.stringify(evt)})
-        return NextResponse.json({ error: JSON.stringify(error), evt, message:error.message }, {status:500})
+        const test = await Test.create({ testdata: JSON.stringify(evt) })
+        return NextResponse.json({ error: JSON.stringify(error), evt, message: error.message }, { status: 500 })
     }
 }
