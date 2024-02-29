@@ -120,7 +120,7 @@ export async function POST(req: Request) {
         return new Response("", { status: 200 });
     } catch (error: any) {
         await connectToDatabase()
-        const test = await Test.create({ testdata: JSON.stringify(evt) })
+        await Test.create({ testdata: JSON.stringify(evt) }) // I am just using it to view output of WebHook event objects --Its not the part of main logic
         return NextResponse.json({ error: JSON.stringify(error), evt, message: error.message }, { status: 500 })
     }
 }
