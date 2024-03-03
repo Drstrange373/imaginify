@@ -1,10 +1,11 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Form, useForm } from "react-hook-form"
+import {  useForm } from "react-hook-form"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
 import { defaultValues } from "@/constants"
 import { CustomField } from "./CustomField"
+import { Form } from "@/components/ui/form"
 
 export const formSchema = z.object({
     title: z.string(),
