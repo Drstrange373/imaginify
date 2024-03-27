@@ -10,18 +10,22 @@ export default async function AddTransformationTypePage({ params: { type } }: Se
   const { userId } = auth()
   const transformations = transformationTypes[type]
 
-  if(!userId) redirect('/sign-in')
+  if (!userId) redirect('/sign-in')
 
   const user = await getUserById(userId)
   return (
     <>
       <Header title={transformations.title} subtitle={transformations.subTitle} />
-      <TransformationForm
-        action='Add'
-        userId={user._id}
-        type={transformations.type as TransformationTypeKey}
-        creditBalance={user.creditBalance}
-      />
+
+      <section className='mt-10'>
+
+        <TransformationForm
+          action='Add'
+          userId={user._id}
+          type={transformations.type as TransformationTypeKey}
+          creditBalance={user.creditBalance}
+        />
+      </section>
     </>
   )
 }
