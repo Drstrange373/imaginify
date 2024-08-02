@@ -8,7 +8,7 @@ export interface IUser {
     firstName?: string; // Optional property
     lastName?: string; // Optional property
     planId: number; //  defaults to 1
-    creditBalance: number; // defaults to 0
+    creditBalance: number; // defaults to 10
 }
 
 const UserSchema = new Schema({
