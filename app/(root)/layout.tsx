@@ -10,7 +10,7 @@ export default function Layout({children}:{children:React.ReactNode}) {
       <MobileNav/>
         <div className="root-container">
             <div className="wrapper">
-                {children }
+                {children}
             </div>
         </div>
         <Toaster/>

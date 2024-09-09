@@ -23,8 +23,10 @@ export default function MediaUploader({ onValueChange, setImage, image, type, pu
             ...prevState,
             publicId:result?.info?.public_id,
             width:result?.info?.width,
-            height:result?.info?.height
+            height:result?.info?.height,
+            secureURL:result?.info.secure_url
         }))
+        console.log(result)
 
         onValueChange(result?.info?.public_id)
         toast({

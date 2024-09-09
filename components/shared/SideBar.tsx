@@ -8,6 +8,7 @@ import React from 'react'
 import { Button } from '../ui/button'
 
 export default function SideBar() {
+    console.log("hey..rendering...?".toUpperCase())
     const pathname = usePathname()
     return (
         <aside className='sidebar'>
