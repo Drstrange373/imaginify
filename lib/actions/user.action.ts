@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import User from "@/lib/database/models/user.model";
 import { connectToDatabase } from "@/lib/database/mongoose";
 import { handleError } from "../utils";
+import Image from "../database/models/image.model";
 
 // CREATE
 export async function createUser(user: CreateUserParams) {
@@ -91,3 +92,4 @@ export async function updateCredits(userId: string, creditFee: number) {
     handleError(error);
   }
 }
+

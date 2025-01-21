@@ -71,7 +71,7 @@ export async function getImageById(imageId: string) {
     try {
         await connectToDatabase()
 
-        const image = await Image.findById(imageId)
+        const image = await Image.findById(imageId).populate('author', 'clerkId')
         if (!image) throw new Error("IMAGE NOT FOUND")
 
 
@@ -129,3 +129,34 @@ export async function getAllImages({ limit = 9, page = 1, searchQuery = '' }: {
         handleError(error)
     }
 }
+
+export async function getUserImages({
+    limit = 9,
+    page = 1,
+    userId,
+  }: {
+    limit?: number;
+    page: number;
+    userId: string;
+  }) {
+    try {
+      await connectToDatabase();
+  
+      const skipAmount = (Number(page) - 1) * limit;
+  
+      const images = await Image.find({ author: userId }).populate({
+        path: 'author',
+        model: User,
+        select: '_id firstName lastName clerkId'
+      }).sort({ updatedAt: -1 }).skip(skipAmount).limit(limit);
+  
+      const totalImages = await Image.find({ author: userId }).countDocuments();
+  
+      return {
+        data: JSON.parse(JSON.stringify(images)),
+        totalPages: Math.ceil(totalImages / limit),
+      };
+    } catch (error) {
+      handleError(error);
+    }
+  }

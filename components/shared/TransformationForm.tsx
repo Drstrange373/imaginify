@@ -23,6 +23,8 @@ import { getCldImageUrl } from "next-cloudinary"
 import { addImage, updateImage } from "@/lib/actions/image.action"
 import { useRouter } from "next/navigation"
 import { InsufficientCreditsModal } from "./InsufficientCreditsModal"
+import { useToast } from "../ui/use-toast"
+
 
 export const formSchema = z.object({
     title: z.string().trim().min(1, "Title is required"),
@@ -37,6 +39,7 @@ export const formSchema = z.object({
 
 export default function TransformationForm({ action, data = null, userId, type, creditBalance, config = null }: TransformationFormProps) {
 
+    const [isTransformed, setIsTransformed] = useState(false)
     const [image, setImage] = useState(data)
     const [newTransformation, setNewTransformation] = useState<Transformations | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -44,6 +47,8 @@ export default function TransformationForm({ action, data = null, userId, type, 
     const [transformationConfig, setTransformationConfig] = useState(config)
     const [_, startTransition] = useTransition()
     const router = useRouter()
+    const toast = useToast()
+    const [selectFieldValue, setSelectFieldValue] = useState<AspectRatioKey | null>(null)
 
 
     const initialValues = data && action === 'Update' ? {
@@ -69,6 +74,10 @@ export default function TransformationForm({ action, data = null, userId, type, 
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        if(!isTransformed){
+            toast.toast({description:"Please apply the transformation first"})
+            return
+        }
         setIsSubmitting(true)
         if (data || image) {
             const transformationURL = getCldImageUrl({
@@ -103,7 +112,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
                         router.push(`/transformations/${newImage._id}`)
                     }
                 } catch (error) {
-                    console.log(error)
+                    console.log("ERROR IN TRANSFORMATION FORM, ADD" ,error)
                 }
             }
             if (action === 'Update') {
@@ -122,21 +131,21 @@ export default function TransformationForm({ action, data = null, userId, type, 
                         router.push(`/transformations/${updatedImage._id}`)
                     }
                 } catch (error) {
-                    console.log(error)
+                    console.log("ERROR IN TRANSFORMATION FORM, UPDATE",error)
                 }
             }
         }
     }
 
     function onSelectFieldHandler(value: string, onFiledChange: (value: string) => undefined) {
-        const imageSize = aspectRatioOptions[value as AspectRatioKey]
-        setImage((prevState: any) => ({
-            ...prevState,
-            aspectRatio: imageSize.aspectRatio,
-            width: imageSize.width,
-            height: imageSize.height
-        }))
-
+        // const imageSize = aspectRatioOptions[value as AspectRatioKey]
+        // setImage((prevState: any) => ({
+        //     ...prevState,
+        //     aspectRatio: imageSize.aspectRatio,
+        //     width: imageSize.width,
+        //     height: imageSize.height
+        // }))
+        setSelectFieldValue(value as AspectRatioKey)
         setNewTransformation(transformationType.config)
         return onFiledChange(value)
 
@@ -157,11 +166,31 @@ export default function TransformationForm({ action, data = null, userId, type, 
 
 
     async function onTransformHandler() {
+        if(isTransformed){
+            toast.toast({description:"This image has been transformed"})
+            return
+        }
+        if(type === 'fill'){
+            const imageSize = aspectRatioOptions[selectFieldValue!]
+            setImage((prevState: any) => ({
+                ...prevState,
+                aspectRatio: imageSize.aspectRatio,
+                width: imageSize.width,
+                height: imageSize.height
+            }))
+        }
         setIsTransforming(true)
         setTransformationConfig(deepMergeObjects(newTransformation, transformationConfig))
         setNewTransformation(null)
         startTransition(async () => {
             await updateCredits(userId, creditFee)
+            setIsTransformed(true)
+            toast.toast({
+                title: "Transformed successfully",
+                description: '1 credit deducted from your account. Please save the image',
+                duration: 5000,
+                className: 'success-toast'
+            })
         })
     }
 
@@ -187,6 +216,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
                             <Select
                                 onValueChange={(value) => onSelectFieldHandler(value, field.onChange)}
                                 value={field.value}
+
                             >
                                 <SelectTrigger className="select-field">
                                     <SelectValue placeholder="Select size" />

@@ -10,16 +10,17 @@ import { getImageSize } from "@/lib/utils";
 import { DeleteConfirmation } from "@/components/shared/DeleteConfirmation";
 import { notFound } from "next/navigation";
 
+
 const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
   const { userId } = auth();
-
   let image;
   try{
     image = await getImageById(id);
   }catch(_){
     notFound()
   }
-  console.log(image)
+  // console.log(image)
+  // console.log(userId, image.author.clerkId)
   return (
     <>
       <Header title={image.title} />
@@ -91,11 +92,15 @@ const ImageDetails = async ({ params: { id } }: SearchParamProps) => {
 
         {userId === image.author.clerkId && (
           <div className="mt-4 space-y-4">
+            {
+              (image.transformationType === 'remove' || image.transformationType === 'recolor' || image.transformationType === 'fill')
+              &&
             <Button asChild type="button" className="submit-button capitalize">
               <Link href={`/transformations/${image._id}/update`}>
                 Update Image
               </Link>
             </Button>
+            }
 
             <DeleteConfirmation imageId={image._id} />
           </div>

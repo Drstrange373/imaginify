@@ -8,7 +8,7 @@ import { PlaceholderValue } from 'next/dist/shared/lib/get-img-props'
 import { useToast } from '../ui/use-toast'
 
 export default function TransformedImage({ image, type, title, transformationConfig, isTransforming, setIsTransforming, hasDownload = true }: TransformedImageProps) {
-
+  // console.log({ image, type, title, transformationConfig, isTransforming, setIsTransforming, hasDownload  })
   const {toast} = useToast()
 
   function downloadHandler(event: React.MouseEvent) {
@@ -29,7 +29,7 @@ export default function TransformedImage({ image, type, title, transformationCon
     if(!errorMessage) return
     toast({
       className:'error-toast',
-      title:'Error occured while loading image',
+      title:'Error occurred while loading image',
       description:errorMessage,
       duration: 5000,
     })
@@ -74,7 +74,7 @@ export default function TransformedImage({ image, type, title, transformationCon
             />
 
             {
-              isTransforming && (
+              (isTransforming) && (
                 <div className='transforming-loader'>
                   <Image src="/assets/icons/spinner.svg" 
                   width={50} 

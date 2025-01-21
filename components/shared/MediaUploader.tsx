@@ -26,12 +26,12 @@ export default function MediaUploader({ onValueChange, setImage, image, type, pu
             height:result?.info?.height,
             secureURL:result?.info.secure_url
         }))
-        console.log(result)
+        // console.log(result)
 
         onValueChange(result?.info?.public_id)
         toast({
             title: "Image uploaded successfully",
-            description: '1 Credit was deducted from your account',
+            description: 'Image was uploaded, please apply the transformation',
             duration: 5000,
             className: 'success-toast'
         })

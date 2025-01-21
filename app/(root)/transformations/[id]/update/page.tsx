@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import Header from "@/components/shared/Header";
 import TransformationForm from "@/components/shared/TransformationForm";
@@ -15,11 +15,17 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
   const user = await getUserById(userId);
   const image = await getImageById(id);
 
-  const transformation =
-    transformationTypes[image.transformationType as TransformationTypeKey];
+  if(image.author.clerkId !== userId){
+    notFound()
+  }
 
-  return (
-    <>
+  const transformation = transformationTypes[image.transformationType as TransformationTypeKey];
+    if(!(image.transformationType === 'remove'|| image.transformationType === 'recolor' || image.transformationType === 'fill')){
+      notFound()
+    }
+
+    return (
+      <>
       <Header title={transformation.title} subtitle={transformation.subTitle} />
 
       <section className="mt-10">
