@@ -35,7 +35,10 @@ export default function TransformedImage({ image, type, title, transformationCon
     })
   }
 
-  
+  const recolor = {
+    ...transformationConfig?.recolor,
+     to:transformationConfig?.recolor?.to.replace("#","")
+  }
   return (
     <div className='flex flex-col gap-4'>
       <div className="flex-between">
@@ -71,6 +74,7 @@ export default function TransformedImage({ image, type, title, transformationCon
               }}
               onError={handelImageLoadingError}
               {...transformationConfig}
+              recolor={recolor}
             />
 
             {

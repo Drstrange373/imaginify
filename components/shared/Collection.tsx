@@ -95,6 +95,7 @@ export const Collection = ({
 };
 
 const Card = ({ image }: { image: IImage }) => {
+  const recolor = {...image.config.recolor, to:image.config?.recolor?.to?.replace("#", "")}
   return (
     <li>
       <Link href={`/transformations/${image._id}`} className="collection-card">
@@ -104,6 +105,7 @@ const Card = ({ image }: { image: IImage }) => {
           width={image.width}
           height={image.height}
           {...image.config}
+          recolor={recolor}
           loading="lazy"
           className="h-52 w-full rounded-[10px] object-cover"
           sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"

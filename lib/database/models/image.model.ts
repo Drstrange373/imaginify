@@ -7,7 +7,7 @@ export interface IImage extends Document {
     secureURL: string;
     width?: number; // Optional property
     height?: number; // Optional property
-    config?: object; // Optional object property, type can't be determined from schema
+    config?: any; // Optional object property, type can't be determined from schema
     transformationUrl?: URL; // Optional property
     aspectRatio?: string; // Optional property
     color?: string; // Optional property

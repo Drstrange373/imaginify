@@ -20,9 +20,7 @@ const Page = async ({ params: { id } }: SearchParamProps) => {
   }
 
   const transformation = transformationTypes[image.transformationType as TransformationTypeKey];
-    if(!(image.transformationType === 'remove'|| image.transformationType === 'recolor' || image.transformationType === 'fill')){
-      notFound()
-    }
+
 
     return (
       <>

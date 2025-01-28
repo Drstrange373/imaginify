@@ -14,7 +14,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { useEffect, useState, useTransition } from "react"
-import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils"
+import { AspectRatioKey, debounce, deepEqual, deepMergeObjects } from "@/lib/utils"
 import { Button } from "../ui/button"
 import { updateCredits } from "@/lib/actions/user.action"
 import MediaUploader from "./MediaUploader"
@@ -40,7 +40,7 @@ export const formSchema = z.object({
 
 export default function TransformationForm({ action, data = null, userId, type, creditBalance, config = null }: TransformationFormProps) {
 
-    const [isTransformed, setIsTransformed] = useState(false)
+
     const [image, setImage] = useState(data)
     const [newTransformation, setNewTransformation] = useState<Transformations | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -69,17 +69,17 @@ export default function TransformationForm({ action, data = null, userId, type, 
         }
     }, [image, transformationType.config, type])
 
-
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: initialValues,
     })
 
+    
+
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        if(!isTransformed){
-            toast.toast({description:"Please apply the transformation first"})
-            return
-        }
+        // if image is not transformed or privacy field is not mutated 
         setIsSubmitting(true)
         if (data || image) {
             const transformationURL = getCldImageUrl({
@@ -139,6 +139,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
             }
         }
     }
+    (window as any).globalForm = form
 
     function onSelectFieldHandler(value: string, onFiledChange: (value: string) => undefined) {
         // const imageSize = aspectRatioOptions[value as AspectRatioKey]
@@ -177,10 +178,12 @@ export default function TransformationForm({ action, data = null, userId, type, 
 
 
     async function onTransformHandler() {
-        if(isTransformed){
-            toast.toast({description:"This image has been transformed"})
+        
+        if(!newTransformation || deepEqual(newTransformation, transformationConfig)){
+            toast.toast({description:"Please make some changes before applying transformations"})
             return
         }
+
 
         if(type === 'fill'){
             const imageSize = aspectRatioOptions[selectFieldValue!]
@@ -197,7 +200,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
         setNewTransformation(null)
         startTransition(async () => {
             await updateCredits(userId, creditFee)
-            setIsTransformed(true)
+
             toast.toast({
                 title: "Transformed successfully",
                 description: '1 credit deducted from your account. Please save the image',
@@ -294,6 +297,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
                                 className="w-full"
                                 render={({ field }) => (
                                     <Input
+                                        type="color"
                                         value={field.value}
                                         className="input-field"
                                         onChange={(e) => onInputChangeHandler('color', e.target.value, 'recolor', field.onChange)}
