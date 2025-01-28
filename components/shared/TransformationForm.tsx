@@ -31,7 +31,8 @@ export const formSchema = z.object({
     aspectRatio: z.string().optional(),
     color: z.string().optional(),
     prompt: z.string().optional(),
-    publicId: z.string()
+    publicId: z.string(),
+    privacy: z.string()
 })
 
 
@@ -57,6 +58,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
         color: data?.color,
         prompt: data?.prompt,
         publicId: data?.publicId,
+        privacy: data?.isPrivate ? "private" : "public"
     } : defaultValues
     const transformationType = transformationTypes[type]
 
@@ -98,6 +100,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
                 aspectRatio: values.aspectRatio,
                 prompt: values.prompt,
                 color: values.color,
+                isPrivate: values.privacy === 'private',
             }
             if (action === 'Add') {
                 try {
@@ -151,6 +154,14 @@ export default function TransformationForm({ action, data = null, userId, type, 
 
     }
 
+    function onSelectPrivacyFieldHandler(value:string, onFiledChange:(value:string)=>undefined){
+        setImage((prevState: any) => ({
+           ...prevState,
+            isPrivate: value === 'private'
+        }))
+        return onFiledChange(value)
+    }
+
     function onInputChangeHandler(fieldName: string, value: string, type: string, onChangeField: (value: string) => void) {
 
         setNewTransformation((prevState: any) => ({
@@ -170,6 +181,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
             toast.toast({description:"This image has been transformed"})
             return
         }
+
         if(type === 'fill'){
             const imageSize = aspectRatioOptions[selectFieldValue!]
             setImage((prevState: any) => ({
@@ -179,6 +191,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
                 height: imageSize.height
             }))
         }
+
         setIsTransforming(true)
         setTransformationConfig(deepMergeObjects(newTransformation, transformationConfig))
         setNewTransformation(null)
@@ -206,6 +219,27 @@ export default function TransformationForm({ action, data = null, userId, type, 
                     render={({ field }) => <Input className="input-field" {...field} />}
                 />
 
+                <CustomField
+                    control={form.control}
+                    name="privacy"
+                    formLabel="Privacy (Select whether your image is public or private)"
+                    className="w-full"
+                    render={({ field })=> (
+                        <Select 
+                            value={field.value}
+                            onValueChange={(value)=>onSelectPrivacyFieldHandler(value, field.onChange)}
+                        >
+                            <SelectTrigger className="select-field">
+                                <SelectValue placeholder="Select mode" />
+                            </SelectTrigger>
+
+                            <SelectContent>
+                                <SelectItem className="select-item" value="public">Public</SelectItem>
+                                <SelectItem className="select-item" value="private">Private</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    )}/>
+
                 {type === 'fill' &&
                     <CustomField
                         control={form.control}
@@ -221,7 +255,7 @@ export default function TransformationForm({ action, data = null, userId, type, 
                                 <SelectTrigger className="select-field">
                                     <SelectValue placeholder="Select size" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent >
                                     {Object.keys(aspectRatioOptions).map(option =>
                                         <SelectItem key={option} className="select-item" value={option}>
                                             {aspectRatioOptions[option as AspectRatioKey].label}

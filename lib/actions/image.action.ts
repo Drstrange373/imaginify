@@ -110,7 +110,8 @@ export async function getAllImages({ limit = 9, page = 1, searchQuery = '' }: {
         const images = await Image.find({
             publicId: {
                 $in: resourcesIds
-            }
+            },
+            isPrivate:false
         }).populate({
             path: 'author',
             model: User,
